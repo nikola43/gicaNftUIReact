@@ -6,27 +6,13 @@ import discord from "../Materials/discord.svg";
 import forum from "../Materials/forum.png";
 import twitter from "../Materials/twitter.svg";
 
+// import abi file
 
 function NavBar() {
 	const { active, account, library, activate, deactivate, chainId } =
 		useWeb3React();
 
-	const NodeManagerAddress = "0xF193c3090aF70BC86c0c38BEBf349fA39762F6dE";
-	const PonziXAddress = "0x629C4607C42A018E11416BB6f7B6adD3B4F03384";
 
-	useEffect(() => {
-		if (account) {
-			/*
-			nodeRewardsContract = new library.eth.Contract(
-				NodeManagerAbi,
-				NodeManagerAddress
-			).methods;
-
-			tokenContract = new library.eth.Contract(PonziXAbi, PonziXAddress)
-				.methods;
-				*/
-		}
-	}, [account]);
 
 	useEffect(() => {
 		const isWalletConnected = localStorage.getItem("isWalletConnected");
@@ -55,7 +41,7 @@ function NavBar() {
 		return "";
 	}
 
-	async function disconnect() {
+	async function disconnectMetamaks() {
 		try {
 			deactivate();
 			localStorage.setItem("isWalletConnected", "false");
@@ -76,7 +62,15 @@ function NavBar() {
 				<h1>Kitties.Vip</h1> <br /> <span>by claimkitty</span>
 			</div>
 			<div className="right_header">
-				<button className="btn">Contact Wallet</button>
+				{active ? (
+					<button className="btn" onClick={disconnectMetamaks}>
+						{getWalletAbreviation(account)}
+					</button>
+				) : (
+					<button className="btn" onClick={connectMetamaks}>
+						Contact Wallet
+					</button>
+				)}
 			</div>
 		</div>
 	);

@@ -4,9 +4,61 @@ import type1 from "../Materials/type1.png";
 import type2 from "../Materials/type2.png";
 import type3 from "../Materials/type3.png";
 
+// import abi file
+import KittieNftAbi from "../blockchain/abi/KittieNft.json";
+import toast, { Toaster } from "react-hot-toast";
+import { useState } from "react";
+
 function App() {
 	const { active, account, library, activate, deactivate, chainId } =
 		useWeb3React();
+
+	const [isMintingOneLoading, setIsMintingOneLoading] = useState(false);
+	const [isMintingTwoLoading, setIsMintingTwoLoading] = useState(false);
+	const [isMintingThreeLoading, setIsMintingThreeLoading] = useState(false);
+
+	let kittieNftContract: any;
+
+	const kittieNftAddress = "0x8F171cA032227dFE08c2793c837cB999B8C276e1";
+
+	if (library) {
+		kittieNftContract = new library.eth.Contract(
+			KittieNftAbi,
+			kittieNftAddress
+		);
+	}
+
+	// function for minting
+	async function mintNFT() {
+		const mintAmount = 1;
+		const merkleProofL1: any = [];
+		const merkleProofL2: any = [];
+
+		setIsMintingOneLoading(true);
+
+		const mintingCost = await kittieNftContract.methods
+			.calculateMintingCost(mintAmount, merkleProofL1, merkleProofL2)
+			.call();
+		console.log(mintingCost);
+
+		await kittieNftContract.methods
+			.mint(mintAmount, merkleProofL1, merkleProofL2)
+			.send({ from: account, value: mintingCost })
+			.then(
+				(res: any) => {
+					console.log(res);
+					toast.success("Minted Successfully");
+					setIsMintingOneLoading(false);
+				},
+				(err: any) => {
+					console.log(err);
+					toast.error(err.message);
+					setIsMintingOneLoading(false);
+				}
+			);
+
+		console.log(mintingCost);
+	}
 
 	return (
 		<div className="container-background">
@@ -35,29 +87,44 @@ function App() {
 						<h3>
 							Discount <span>100%</span>
 						</h3>
-						<button className="btn1">Mint Now</button>
+						<button className="btn1" onClick={mintNFT}>
+							Mint Now
+							{isMintingOneLoading ? (
+								<div className="loader"></div>
+							) : null}
+						</button>
 					</div>
 					<div className="box1">
 						<img src={type2} style={{ width: "9rem" }} alt="" />
-						<h3>Type#1</h3>
+						<h3>Type#2</h3>
 						<h3>
 							Cap <span>500</span>
 						</h3>
 						<h3>
 							Discount <span>100%</span>
 						</h3>
-						<button className="btn1">Mint Now</button>
+						<button className="btn1" onClick={mintNFT}>
+							Mint Now
+							{isMintingTwoLoading ? (
+								<div className="loader"></div>
+							) : null}
+						</button>
 					</div>
 					<div className="box1">
 						<img src={type1} style={{ width: "9rem" }} alt="" />
-						<h3>Type#1</h3>
+						<h3>Type#3</h3>
 						<h3>
 							Cap <span>500</span>
 						</h3>
 						<h3>
 							Discount <span>100%</span>
 						</h3>
-						<button className="btn1">Mint Now</button>
+						<button className="btn1" onClick={mintNFT}>
+							Mint Now
+							{isMintingThreeLoading ? (
+								<div className="loader"></div>
+							) : null}
+						</button>
 					</div>
 				</div>
 			</section>
@@ -78,6 +145,7 @@ function App() {
 					</div>
 				</div>
 			</div>
+			<Toaster />
 		</div>
 	);
 }
