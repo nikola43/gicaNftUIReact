@@ -7,7 +7,7 @@ import type3 from "../Materials/type3.png";
 // import abi file
 import KittieNftAbi from "../blockchain/abi/KittieNft.json";
 import toast, { Toaster } from "react-hot-toast";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 function App() {
 	const { active, account, library, activate, deactivate, chainId } =
@@ -16,6 +16,9 @@ function App() {
 	const [isMintingOneLoading, setIsMintingOneLoading] = useState(false);
 	const [isMintingTwoLoading, setIsMintingTwoLoading] = useState(false);
 	const [isMintingThreeLoading, setIsMintingThreeLoading] = useState(false);
+
+	const [merkleProofL1, setMerkleProofL1] = useState([]);
+	const [merkleProofL2, setMerkleProofL2] = useState([]);
 
 	let kittieNftContract: any;
 
@@ -28,13 +31,63 @@ function App() {
 		);
 	}
 
+	useEffect(() => {
+		if (account) {
+			getProof(account, "1").then((proof) => {
+				setMerkleProofL1(proof);
+			});
+			getProof(account, "2").then((proof) => {
+				setMerkleProofL2(proof);
+			});
+		}
+	}, [account]);
+
+	// function for all api
+	// api url https://merkle-tree-nft-api.vercel.app/
+	function getProof(address: string, listNumber: string) {
+		const proof = fetch(
+			"https://merkle-tree-nft-api.vercel.app" +
+				"/get_proof_by_address/" +
+				listNumber +
+				"/" +
+				address
+		)
+			.then((res) => res.json())
+			.then((data) => {
+				return data;
+			});
+		return proof;
+	}
+
+	// function for all api
+	// api url https://merkle-tree-nft-api.vercel.app/
+	function getProof2(address: string, listNumber: string) {
+		fetch(
+			"https://merkle-tree-nft-api.vercel.app" +
+				"/get_proof_by_address/" +
+				listNumber +
+				"/" +
+				address
+		)
+			.then((res) => res.json())
+			.then((data) => {
+				console.log(data);
+				if (data.length === 0) {
+					toast.error("You are not on the list " + listNumber + ".");
+				} else {
+					toast.success("You are on the list " + listNumber + ".");
+				}
+			});
+	}
+
 	// function for minting
 	async function mintNFT() {
 		const mintAmount = 1;
-		const merkleProofL1: any = [];
-		const merkleProofL2: any = [];
 
 		setIsMintingOneLoading(true);
+
+		console.log(merkleProofL1);
+		console.log(merkleProofL2);
 
 		const mintingCost = await kittieNftContract.methods
 			.calculateMintingCost(mintAmount, merkleProofL1, merkleProofL2)
@@ -140,8 +193,32 @@ function App() {
 						show the two lists.
 					</p>
 					<div className="twobtn">
-						<button className="btn1"> Check 1st List</button>
-						<button className="btn1"> Check 2nd List</button>
+						<button
+							className="btn1"
+							onClick={async () => {
+								if (account) {
+									await getProof2(account, "1");
+								} else {
+									toast("Please connect your wallet");
+								}
+							}}
+						>
+							{" "}
+							Check 1st List
+						</button>
+						<button
+							className="btn1"
+							onClick={async () => {
+								if (account) {
+									await getProof2(account, "2");
+								} else {
+									toast("Please connect your wallet");
+								}
+							}}
+						>
+							{" "}
+							Check 2nd List
+						</button>
 					</div>
 				</div>
 			</div>
