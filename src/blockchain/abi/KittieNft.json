@@ -12,11 +12,6 @@
         "type": "uint8"
       },
       {
-        "internalType": "string",
-        "name": "_newBaseURI",
-        "type": "string"
-      },
-      {
         "internalType": "uint256",
         "name": "_cost",
         "type": "uint256"
@@ -39,11 +34,6 @@
       {
         "internalType": "string",
         "name": "_initBaseURI",
-        "type": "string"
-      },
-      {
-        "internalType": "string",
-        "name": "_initNotRevealedUri",
         "type": "string"
       }
     ],
@@ -214,19 +204,6 @@
   },
   {
     "inputs": [],
-    "name": "baseExtension",
-    "outputs": [
-      {
-        "internalType": "string",
-        "name": "",
-        "type": "string"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [],
     "name": "baseURI",
     "outputs": [
       {
@@ -240,6 +217,24 @@
   },
   {
     "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "tokenId",
+        "type": "uint256"
+      }
+    ],
+    "name": "burn",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "account",
+        "type": "address"
+      },
       {
         "internalType": "uint256",
         "name": "_mintAmount",
@@ -275,25 +270,6 @@
     "type": "function"
   },
   {
-    "inputs": [
-      {
-        "internalType": "address",
-        "name": "",
-        "type": "address"
-      }
-    ],
-    "name": "claimableAmount",
-    "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
     "inputs": [],
     "name": "cost",
     "outputs": [
@@ -308,7 +284,7 @@
   },
   {
     "inputs": [],
-    "name": "currentWethContractBalance",
+    "name": "currentWethBalance",
     "outputs": [
       {
         "internalType": "uint256",
@@ -324,9 +300,9 @@
     "name": "deployedTimestamp",
     "outputs": [
       {
-        "internalType": "uint32",
+        "internalType": "uint256",
         "name": "",
-        "type": "uint32"
+        "type": "uint256"
       }
     ],
     "stateMutability": "view",
@@ -365,8 +341,14 @@
     "type": "function"
   },
   {
-    "inputs": [],
-    "name": "getBalance",
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "_account",
+        "type": "address"
+      }
+    ],
+    "name": "getClaimableAmount",
     "outputs": [
       {
         "internalType": "uint256",
@@ -380,25 +362,38 @@
   {
     "inputs": [
       {
-        "internalType": "uint32",
+        "internalType": "uint256",
         "name": "_startTime",
-        "type": "uint32"
+        "type": "uint256"
       },
       {
-        "internalType": "uint32",
+        "internalType": "uint256",
         "name": "_endTime",
-        "type": "uint32"
+        "type": "uint256"
       }
     ],
     "name": "getElapsedTime",
     "outputs": [
       {
-        "internalType": "uint32",
+        "internalType": "uint256",
         "name": "",
-        "type": "uint32"
+        "type": "uint256"
       }
     ],
-    "stateMutability": "pure",
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "getNumberOfTokenHolders",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
     "type": "function"
   },
   {
@@ -499,25 +494,6 @@
     "type": "function"
   },
   {
-    "inputs": [
-      {
-        "internalType": "address",
-        "name": "",
-        "type": "address"
-      }
-    ],
-    "name": "is_minter",
-    "outputs": [
-      {
-        "internalType": "bool",
-        "name": "",
-        "type": "bool"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
     "inputs": [],
     "name": "maxSupply",
     "outputs": [
@@ -548,9 +524,9 @@
     "name": "merkleRootL1Time",
     "outputs": [
       {
-        "internalType": "uint32",
+        "internalType": "uint256",
         "name": "",
-        "type": "uint32"
+        "type": "uint256"
       }
     ],
     "stateMutability": "view",
@@ -574,9 +550,9 @@
     "name": "merkleRootL2Time",
     "outputs": [
       {
-        "internalType": "uint32",
+        "internalType": "uint256",
         "name": "",
-        "type": "uint32"
+        "type": "uint256"
       }
     ],
     "stateMutability": "view",
@@ -606,38 +582,6 @@
     "type": "function"
   },
   {
-    "inputs": [
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      }
-    ],
-    "name": "minters",
-    "outputs": [
-      {
-        "internalType": "address",
-        "name": "",
-        "type": "address"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "mintersCounter",
-    "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
     "inputs": [],
     "name": "name",
     "outputs": [
@@ -658,19 +602,6 @@
         "internalType": "uint8",
         "name": "",
         "type": "uint8"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "notRevealedUri",
-    "outputs": [
-      {
-        "internalType": "string",
-        "name": "",
-        "type": "string"
       }
     ],
     "stateMutability": "view",
@@ -709,56 +640,10 @@
     "type": "function"
   },
   {
-    "inputs": [
-      {
-        "internalType": "bool",
-        "name": "_state",
-        "type": "bool"
-      }
-    ],
-    "name": "pause",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "paused",
-    "outputs": [
-      {
-        "internalType": "bool",
-        "name": "",
-        "type": "bool"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
     "inputs": [],
     "name": "renounceOwnership",
     "outputs": [],
     "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "reveal",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "revealed",
-    "outputs": [
-      {
-        "internalType": "bool",
-        "name": "",
-        "type": "bool"
-      }
-    ],
-    "stateMutability": "view",
     "type": "function"
   },
   {
@@ -863,19 +748,6 @@
     "inputs": [
       {
         "internalType": "string",
-        "name": "_newBaseExtension",
-        "type": "string"
-      }
-    ],
-    "name": "setBaseExtension",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "string",
         "name": "_newBaseURI",
         "type": "string"
       }
@@ -914,6 +786,19 @@
   {
     "inputs": [
       {
+        "internalType": "uint256",
+        "name": "_merkleRootL1Time",
+        "type": "uint256"
+      }
+    ],
+    "name": "setMerkleRootL1Time",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
         "internalType": "bytes32",
         "name": "_merkleRootL2",
         "type": "bytes32"
@@ -927,12 +812,12 @@
   {
     "inputs": [
       {
-        "internalType": "string",
-        "name": "_notRevealedURI",
-        "type": "string"
+        "internalType": "uint256",
+        "name": "_merkleRootL2Time",
+        "type": "uint256"
       }
     ],
-    "name": "setNotRevealedURI",
+    "name": "setMerkleRootL2Time",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
@@ -1048,30 +933,6 @@
     "inputs": [
       {
         "internalType": "address",
-        "name": "to",
-        "type": "address"
-      },
-      {
-        "internalType": "uint256",
-        "name": "amount",
-        "type": "uint256"
-      }
-    ],
-    "name": "transfer",
-    "outputs": [
-      {
-        "internalType": "bool",
-        "name": "",
-        "type": "bool"
-      }
-    ],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "address",
         "name": "from",
         "type": "address"
       },
@@ -1113,6 +974,13 @@
       }
     ],
     "name": "unwrapWeth",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "updateRewards",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"

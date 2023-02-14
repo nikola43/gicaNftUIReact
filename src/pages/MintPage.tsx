@@ -8,6 +8,7 @@ import type3 from "../Materials/type3.png";
 import KittieNftAbi from "../blockchain/abi/KittieNft.json";
 import toast, { Toaster } from "react-hot-toast";
 import { useEffect, useState } from "react";
+import kittieNftAddress from "../blockchain/addresses";
 
 function App() {
 	const { active, account, library, activate, deactivate, chainId } =
@@ -22,7 +23,6 @@ function App() {
 
 	let kittieNftContract: any;
 
-	const kittieNftAddress = "0x8F171cA032227dFE08c2793c837cB999B8C276e1";
 
 	if (library) {
 		kittieNftContract = new library.eth.Contract(
@@ -90,7 +90,12 @@ function App() {
 		console.log(merkleProofL2);
 
 		const mintingCost = await kittieNftContract.methods
-			.calculateMintingCost(mintAmount, merkleProofL1, merkleProofL2)
+			.calculateMintingCost(
+				account,
+				mintAmount,
+				merkleProofL1,
+				merkleProofL2
+			)
 			.call();
 		console.log(mintingCost);
 
