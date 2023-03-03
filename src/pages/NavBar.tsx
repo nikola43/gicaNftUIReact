@@ -12,8 +12,6 @@ function NavBar() {
 	const { active, account, library, activate, deactivate, chainId } =
 		useWeb3React();
 
-
-
 	useEffect(() => {
 		const isWalletConnected = localStorage.getItem("isWalletConnected");
 		const connector = localStorage.getItem("connector");

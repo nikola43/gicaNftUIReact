@@ -5,10 +5,11 @@ import type2 from "../Materials/type2.png";
 import type3 from "../Materials/type3.png";
 
 // import abi file
+import NftManagerAbi from "../blockchain/abi/NftManager.json";
 import KittieNftAbi from "../blockchain/abi/KittieNft.json";
 import toast, { Toaster } from "react-hot-toast";
 import { useEffect, useState } from "react";
-import kittieNftAddress from "../blockchain/addresses";
+import KittieNft1Address from "../blockchain/addresses";
 
 function App() {
 	const { active, account, library, activate, deactivate, chainId } =
@@ -21,18 +22,21 @@ function App() {
 	const [merkleProofL1, setMerkleProofL1] = useState([]);
 	const [merkleProofL2, setMerkleProofL2] = useState([]);
 
-	let kittieNftContract: any;
+	// state for store selected type of check list number
+	const [selectedType, setSelectedType] = useState(1);
 
+	let kittieNft1: any;
 
 	if (library) {
-		kittieNftContract = new library.eth.Contract(
+		kittieNft1 = new library.eth.Contract(
 			KittieNftAbi,
-			kittieNftAddress
+			KittieNft1Address
 		);
 	}
 
 	useEffect(() => {
 		if (account) {
+			// get proofs
 			getProof(account, "1").then((proof) => {
 				setMerkleProofL1(proof);
 			});
@@ -80,16 +84,12 @@ function App() {
 			});
 	}
 
-	// function for minting
-	async function mintNFT() {
-		const mintAmount = 1;
-
-		setIsMintingOneLoading(true);
-
-		console.log(merkleProofL1);
-		console.log(merkleProofL2);
-
-		const mintingCost = await kittieNftContract.methods
+	async function calculateMintingCost(
+		mintAmount: number,
+		merkleProofL1: string[],
+		merkleProofL2: string[]
+	) {
+		return await kittieNft1.methods
 			.calculateMintingCost(
 				account,
 				mintAmount,
@@ -97,21 +97,68 @@ function App() {
 				merkleProofL2
 			)
 			.call();
-		console.log(mintingCost);
+	}
 
-		await kittieNftContract.methods
-			.mint(mintAmount, merkleProofL1, merkleProofL2)
+	// function for minting
+	async function mintNFT(type: number) {
+		const mintAmount = 1;
+
+		switch (type) {
+			case 1:
+				setIsMintingOneLoading(true);
+				break;
+			case 2:
+				setIsMintingTwoLoading(true);
+				break;
+			case 3:
+				setIsMintingThreeLoading(true);
+				break;
+			default:
+				break;
+		}
+
+		console.log(merkleProofL1);
+		console.log(merkleProofL2);
+
+		const mintingCost = await calculateMintingCost(
+			mintAmount,
+			merkleProofL1,
+			merkleProofL2
+		);
+
+		// check user eth balance
+		const ethBalance = await library.eth.getBalance(account);
+		console.log(ethBalance);
+		console.log(mintingCost);
+		console.log(ethBalance < mintingCost);
+		/* 
+		todo check
+		if (ethBalance < mintingCost) {
+			toast.error("You don't have enough ETH to mint this NFT.");
+			setIsMintingOneLoading(false);
+			setIsMintingTwoLoading(false);
+			setIsMintingThreeLoading(false);
+			return;
+		}
+		*/
+
+		await kittieNft1.methods
+			.mint(account, mintAmount, merkleProofL1, merkleProofL2)
 			.send({ from: account, value: mintingCost })
 			.then(
 				(res: any) => {
 					console.log(res);
 					toast.success("Minted Successfully");
 					setIsMintingOneLoading(false);
+					setIsMintingTwoLoading(false);
+					setIsMintingThreeLoading(false);
 				},
 				(err: any) => {
 					console.log(err);
 					toast.error(err.message);
 					setIsMintingOneLoading(false);
+					setIsMintingTwoLoading(false);
+					setIsMintingThreeLoading(false);
 				}
 			);
 
@@ -140,12 +187,17 @@ function App() {
 						<img src={type3} style={{ width: "9rem" }} alt="" />
 						<h3>Type#1</h3>
 						<h3>
-							Cap <span>500</span>
+							Cap <span>10,000</span>
 						</h3>
 						<h3>
 							Discount <span>100%</span>
 						</h3>
-						<button className="btn1" onClick={mintNFT}>
+						<button
+							className="btn1"
+							onClick={() => {
+								mintNFT(1).then(() => {});
+							}}
+						>
 							Mint Now
 							{isMintingOneLoading ? (
 								<div className="loader"></div>
@@ -156,12 +208,17 @@ function App() {
 						<img src={type2} style={{ width: "9rem" }} alt="" />
 						<h3>Type#2</h3>
 						<h3>
-							Cap <span>500</span>
+							Cap <span>20,000</span>
 						</h3>
 						<h3>
-							Discount <span>100%</span>
+							Discount <span>60%</span>
 						</h3>
-						<button className="btn1" onClick={mintNFT}>
+						<button
+							className="btn1"
+							onClick={() => {
+								mintNFT(2).then(() => {});
+							}}
+						>
 							Mint Now
 							{isMintingTwoLoading ? (
 								<div className="loader"></div>
@@ -172,12 +229,17 @@ function App() {
 						<img src={type1} style={{ width: "9rem" }} alt="" />
 						<h3>Type#3</h3>
 						<h3>
-							Cap <span>500</span>
+							Cap <span>30,000</span>
 						</h3>
 						<h3>
-							Discount <span>100%</span>
+							Discount <span>30%</span>
 						</h3>
-						<button className="btn1" onClick={mintNFT}>
+						<button
+							className="btn1"
+							onClick={() => {
+								mintNFT(3).then(() => {});
+							}}
+						>
 							Mint Now
 							{isMintingThreeLoading ? (
 								<div className="loader"></div>
@@ -188,6 +250,7 @@ function App() {
 			</section>
 
 			<div className="freemint">
+				<div className="freemint-contant"></div>
 				<div className="freemint-contant">
 					<h1>Check if you are elegible for Free-Mint NFT.</h1>
 					<p>
@@ -197,6 +260,32 @@ function App() {
 						15/08/2023 to 15/02/2024. Click on the buttons below to
 						show the two lists.
 					</p>
+					<div className="twobtn">
+						<button
+							className="btn1 selected-button"
+							onClick={async () => {
+								setSelectedType(1);
+							}}
+						>
+							Type 1
+						</button>
+						<button
+							className="btn1"
+							onClick={async () => {
+								setSelectedType(2);
+							}}
+						>
+							Type 2
+						</button>
+						<button
+							className="btn1"
+							onClick={async () => {
+								setSelectedType(3);
+							}}
+						>
+							Type 3
+						</button>
+					</div>
 					<div className="twobtn">
 						<button
 							className="btn1"

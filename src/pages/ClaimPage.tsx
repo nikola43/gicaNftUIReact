@@ -2,28 +2,39 @@ import { useWeb3React } from "@web3-react/core";
 import KittieNftAbi from "../blockchain/abi/KittieNft.json";
 import toast, { Toaster } from "react-hot-toast";
 import { useState } from "react";
-import kittieNftAddress from "../blockchain/addresses";
+import KittieNft1Address from "../blockchain/addresses";
+import { formatEther, parseEther } from "ethers";
+
 
 function ClaimPage() {
 	const { active, account, library, activate, deactivate, chainId } =
 		useWeb3React();
 
 	const [isClaimLoading, setIsClaimLoading] = useState(false);
+	const [claimableAmount, setClaimableAmount] = useState("0");
 
-	let kittieNftContract: any;
+	let kittieNft1: any;
 
+	const getClaimableAmount = async () => {
+		const claimable = await kittieNft1.methods
+			.getAllClaimableRewards(account)
+			.call();
+
+		setClaimableAmount(formatEther(claimable));
+
+		console.log(claimable);
+	};
 
 	if (library) {
-		kittieNftContract = new library.eth.Contract(
-			KittieNftAbi,
-			kittieNftAddress
-		);
+		kittieNft1 = new library.eth.Contract(KittieNftAbi, KittieNft1Address);
+
+		getClaimableAmount();
 	}
 
 	const claimRewards = async () => {
 		setIsClaimLoading(true);
-		await kittieNftContract.methods
-			.claimRewards()
+		await kittieNft1.methods
+			.claimAllRewards()
 			.send({ from: account })
 			.then(
 				(res: any) => {
@@ -54,7 +65,7 @@ function ClaimPage() {
 							and execute the transaction.
 						</p>{" "}
 						<br />
-						<p>Amount of ETH to claim: 2.0 ETH</p>
+						<p>Amount of ETH to claim: {claimableAmount} ETH</p>
 						<div className="btn_design">
 							<button
 								className="claim_btn"
